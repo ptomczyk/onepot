@@ -1,0 +1,20 @@
+[package]
+name = "recipes"
+version = "0.1.0"
+authors = ["Piotr Tomczyk <p.tomczyk@binarapps.com>"]
+edition = "2018"
+build = "build.rs"
+
+[dependencies]
+bytes = "*"
+prost = "*"
+reqwest = "*"
+http = "0.1"
+lambda_runtime = "*"
+scraper = "*"
+url = "*"
+rand = "0.6.5"
+now_lambda = "*"
+
+[build-dependencies]
+prost-build = { version = "*" }

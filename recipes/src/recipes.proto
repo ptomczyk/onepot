@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package onepot;
+
+message Ingredient {
+    string name = 1;
+}
+
+message Step {
+    string description = 1;
+}
+
+message Recipe {
+    string name = 1;
+    repeated Ingredient ingredients = 2;
+    repeated Step preparation = 3;
+}
