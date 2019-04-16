@@ -59,9 +59,9 @@ fn fetch_html(url: &str) -> Html {
 }
 
 fn get_url(endpoint: &str) -> String {
-    let mut rng = rand::thread_rng();
-    let page = rng.gen_range(0, 4);
-    format!("https://www.kwestiasmaku.com{}?page={}", endpoint, page)
+    // let mut rng = rand::thread_rng();
+    // let page = rng.gen_range(0, 4);
+    format!("https://www.kwestiasmaku.com{}?page={}", endpoint)
 }
 
 fn extract_hrefs(html: &Html) -> Vec<String> {
