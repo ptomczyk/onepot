@@ -1,9 +1,9 @@
 use rand::seq::SliceRandom;
 use reqwest::{header, Client};
-use scraper::{Html, Selector, ElementRef};
+use scraper::{Html, Selector};
 use url::Url;
 
-use crate::items::{Recipe, Ingredient, Step};
+use crate::items::{Ingredient, Recipe, Step};
 
 pub mod items {
     include!(concat!(env!("OUT_DIR"), "/onepot.rs"));
@@ -29,15 +29,19 @@ impl Recipe {
     fn new(name: String, ingredients: Vec<String>, preparation: Vec<String>) -> Self {
         let mut rec = Recipe::default();
         rec.name = name;
-        rec.ingredients = ingredients.into_iter().map(|ingredient|
-            Ingredient::new(ingredient)
-        ).collect();
-        rec.preparation = preparation.into_iter().map(|step| Step::new(step)).collect();
+        rec.ingredients = ingredients
+            .into_iter()
+            .map(|ingredient| Ingredient::new(ingredient))
+            .collect();
+        rec.preparation = preparation
+            .into_iter()
+            .map(|step| Step::new(step))
+            .collect();
         rec
     }
 }
 
-pub fn fetch_html(url: &str) -> Html {
+fn fetch_html(url: &str) -> Html {
     let url = Url::parse(&url).expect("Failed to parse URL");
 
     let client = Client::new();
@@ -53,70 +57,55 @@ pub fn fetch_html(url: &str) -> Html {
     html
 }
 
-pub fn get_url(endpoint: &str) -> String {
+fn get_url(endpoint: &str) -> String {
     format!("https://www.kwestiasmaku.com{}", endpoint)
 }
 
-pub fn extract_hrefs(html: &Html) -> Vec<String> {
+fn extract_hrefs(html: &Html) -> Vec<String> {
     let selector = String::from(".row > .col> a[href^=\"/przepis\"]");
     let selector = Selector::parse(&selector).unwrap();
 
-    html
-        .select(&selector)
+    html.select(&selector)
         .filter_map(|el| el.value().attr("href"))
         .map(|href| href.to_owned())
         .collect()
 }
 
-pub fn extract_name(html: &Html) -> String {
-//    let selector = String::from(".przepis.page-header");
-//    let selector = Selector::parse(&selector).unwrap();
-//    html
-//        .select(&selector)
-//        .map(|el| el.text().collect::<String>())
-//        .collect()
-    let selector = ".przepis.page-header";
-    extract(html, selector,  |el| el.text().collect::<String>())
-}
+fn extract_name(html: &Html) -> String {
+    let selector = String::from(".przepis.page-header");
+    let selector = Selector::parse(&selector).unwrap();
 
-fn extract<F, R>(html: &Html, selector: &str, f: F) -> R where
-    F: Fn(ElementRef) -> R
-{
-    let selector = &Selector::parse(&selector).unwrap();
-
-    html.select(selector)
-        .map(f)
+    html.select(&selector)
+        .map(|el| el.text().collect::<String>())
         .collect()
 }
 
-pub fn extract_ingredients(html: &Html) -> Vec<String> {
+fn extract_ingredients(html: &Html) -> Vec<String> {
     let selector = String::from(".field-name-field-skladniki li");
     let selector = Selector::parse(&selector).unwrap();
 
-    html
-        .select(&selector)
+    html.select(&selector)
         .map(|el| el.text().collect::<String>().trim().to_owned())
         .collect()
 }
 
-pub fn extract_preparation(html: &Html) -> Vec<String> {
+fn extract_preparation(html: &Html) -> Vec<String> {
     let selector = String::from(".field-name-field-przygotowanie li");
     let selector = Selector::parse(&selector).unwrap();
 
-    html
-        .select(&selector)
+    html.select(&selector)
         .map(|el| el.text().collect::<Vec<_>>().join("").trim().to_owned())
         .collect()
 }
 
-pub fn extract_links() -> Vec<String> {
+fn extract_links() -> Vec<String> {
     let url = &get_url("/przepisy/jednogarnkowe");
     let html = fetch_html(&url);
     let links = extract_hrefs(&html);
     links
 }
 
-pub fn get_random_link() -> Option<String> {
+fn get_random_link() -> Option<String> {
     let links = extract_links();
     let link = links.choose(&mut rand::thread_rng());
     match link {
@@ -136,3 +125,5 @@ pub fn get_recipe() -> Recipe {
 
     Recipe::new(name, ingredients, preparation)
 }
+
+mod extractors {}
