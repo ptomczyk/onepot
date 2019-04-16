@@ -18,3 +18,7 @@ now_lambda = "*"
 
 [build-dependencies]
 prost-build = { version = "*" }
+
+[[bin]]
+name = "get_recipe"
+path = "src/bin/get_recipe.rs"

@@ -1,7 +1,8 @@
-use rand::seq::SliceRandom;
+use rand::{seq::SliceRandom, Rng};
 use reqwest::{header, Client};
 use scraper::{Html, Selector};
 use url::Url;
+
 
 use crate::items::{Ingredient, Recipe, Step};
 
@@ -58,7 +59,9 @@ fn fetch_html(url: &str) -> Html {
 }
 
 fn get_url(endpoint: &str) -> String {
-    format!("https://www.kwestiasmaku.com{}", endpoint)
+    let mut rng = rand::thread_rng();
+    let page = rng.gen_range(0, 4);
+    format!("https://www.kwestiasmaku.com{}?page={}", endpoint, page)
 }
 
 fn extract_hrefs(html: &Html) -> Vec<String> {
@@ -94,7 +97,7 @@ fn extract_preparation(html: &Html) -> Vec<String> {
     let selector = Selector::parse(&selector).unwrap();
 
     html.select(&selector)
-        .map(|el| el.text().collect::<Vec<_>>().join("").trim().to_owned())
+        .map(|el| el.text().collect::<String>().trim().to_owned())
         .collect()
 }
 
@@ -125,5 +128,3 @@ pub fn get_recipe() -> Recipe {
 
     Recipe::new(name, ingredients, preparation)
 }
-
-mod extractors {}

@@ -2,5 +2,5 @@
   "version": 2,
   "name": "recipes",
   "builds": [{ "src": "recipes/Cargo.toml", "use": "@now/rust" }],
-  "routes": [{ "src": "/*", "dest": "recipes/recipes" }]
+  "routes": [{ "src": "/*", "dest": "recipes/get_recipe" }]
 }
