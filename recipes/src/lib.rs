@@ -1,4 +1,4 @@
-use rand::{seq::SliceRandom, Rng};
+use rand::seq::SliceRandom;
 use reqwest::{header, Client};
 use scraper::{Html, Selector};
 use url::Url;
@@ -61,7 +61,7 @@ fn fetch_html(url: &str) -> Html {
 fn get_url(endpoint: &str) -> String {
     // let mut rng = rand::thread_rng();
     // let page = rng.gen_range(0, 4);
-    format!("https://www.kwestiasmaku.com{}?page={}", endpoint)
+    format!("https://www.kwestiasmaku.com{}", endpoint)
 }
 
 fn extract_hrefs(html: &Html) -> Vec<String> {
