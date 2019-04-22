@@ -13,6 +13,7 @@ interface AppState {
 export default class App extends React.Component<{}, AppState> {
   state = { loading: true, error: null, recipe: null };
   load = () => {
+    this.setState({ loading: true, error: null, recipe: null });
     (async () => {
       try {
         const recipe = await fetchRecipe();
@@ -32,10 +33,11 @@ export default class App extends React.Component<{}, AppState> {
     const state = this.state;
     const loading = state.loading;
     const recipe = state.recipe;
+    const error = state.error;
     return (
       <SafeAreaView style={styles.container}>
-        {loading && <Text>Wczytuję...</Text>}
-        {recipe && <RecipeView recipe={recipe} refreshing={loading} refresh={this.load} />}
+        <RecipeView recipe={recipe} refreshing={loading} refresh={this.load} />
+        <Text>{error}</Text>
       </SafeAreaView>
     );
   }

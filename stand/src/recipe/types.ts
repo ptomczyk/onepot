@@ -11,6 +11,10 @@ export interface Recipe {
   }[];
 }
 
+function isRecipe(obj: any) {
+  return typeof obj.name === 'string';
+}
+
 export async function fetchRecipe(): Promise<Recipe> {
   const req = new XMLHttpRequest();
   return new Promise((resolve, reject) => {
@@ -28,7 +32,11 @@ export async function fetchRecipe(): Promise<Recipe> {
         const byteArray = new Uint8Array(arrayBuffer);
         const pbf = new Pbf(byteArray);
         const recipe = RecipeProto.read(pbf) as Recipe;
-        resolve(recipe);
+        if (isRecipe(recipe)) {
+          resolve(recipe);
+        } else {
+          reject(new Error(`${recipe}`));
+        }
       }
     };
     req.send(null);
