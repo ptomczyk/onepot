@@ -15,3 +15,7 @@ message Recipe {
     repeated Ingredient ingredients = 2;
     repeated Step preparation = 3;
 }
+
+message Error {
+    string reason = 1;
+}

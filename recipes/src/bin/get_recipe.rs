@@ -1,18 +1,16 @@
 use std::error::Error;
 
-use now_lambda::{error::NowError, lambda, Request, Response};
-use prost::Message;
+use now_lambda::{lambda, Request, Response};
 
 use recipes::get_recipe;
 
-fn handler(_: Request) -> Result<Response<Vec<u8>>, NowError> {
-    let recipe = get_recipe();
+fn handler(_: Request) -> Result<Response<Vec<u8>>, http::Error> {
     let mut b: Vec<u8> = Vec::new();
-    recipe.encode(&mut b).unwrap();
+    get_recipe(&mut b);
 
-    let response = Response::builder().body(b).expect("Failed to render response");
+    let response = Response::builder().body(b);
 
-    Ok(response)
+    response
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
