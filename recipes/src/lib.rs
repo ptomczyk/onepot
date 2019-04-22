@@ -100,7 +100,7 @@ fn get_url(endpoint: &str) -> Result<Url, ParseError> {
 
 fn extract_links() -> Result<Vec<String>, FetchError> {
     let mut rng = rand::thread_rng();
-    let page = rng.gen_range(0, 4);
+    let page = rng.gen_range(0, 3);
 
     let url = get_url(&format!("/przepisy/jednogarnkowe?page={}", page))?;
 
