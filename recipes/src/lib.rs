@@ -4,13 +4,13 @@ use prost::Message;
 use rand::seq::SliceRandom;
 use rand::Rng;
 use reqwest::{header, Client};
-use scraper::{Html};
+use scraper::Html;
 use url::Url;
 
 use crate::items::{Error as RecipeError, Ingredient, Recipe, Step};
 
 mod extractors;
-use extractors::{extract_hrefs, extract_ingredients, extract_name, extract_preparation};
+use self::extractors::{extract_hrefs, extract_ingredients, extract_name, extract_preparation};
 
 pub mod items {
     include!(concat!(env!("OUT_DIR"), "/onepot.rs"));
