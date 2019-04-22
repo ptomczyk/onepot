@@ -22,3 +22,7 @@ prost-build = { version = "*" }
 [[bin]]
 name = "get_recipe"
 path = "src/bin/get_recipe.rs"
+
+[[bin]]
+name = "main"
+path = "src/main.rs"

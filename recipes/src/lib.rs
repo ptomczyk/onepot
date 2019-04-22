@@ -4,11 +4,13 @@ use prost::Message;
 use rand::seq::SliceRandom;
 use rand::Rng;
 use reqwest::{header, Client};
-use scraper::{Html, Selector};
+use scraper::{Html};
 use url::Url;
 
-
 use crate::items::{Error as RecipeError, Ingredient, Recipe, Step};
+
+mod extractors;
+use extractors::{extract_hrefs, extract_ingredients, extract_name, extract_preparation};
 
 pub mod items {
     include!(concat!(env!("OUT_DIR"), "/onepot.rs"));
@@ -20,7 +22,7 @@ impl RecipeError {
 
         err.reason = match reason {
             FetchError::UrlParsingError => String::from("URL parsing error"),
-            FetchError::ParseError => String::from("HTML parsing error"),
+            FetchError::FetchHtmlError(e) => String::from("Reqwest error"),
             FetchError::UnknownError => String::from("Other error"),
         };
 
@@ -62,7 +64,7 @@ impl Recipe {
 
 enum FetchError {
     UrlParsingError,
-    ParseError,
+    FetchHtmlError(reqwest::Error),
     UnknownError,
 }
 
@@ -72,9 +74,7 @@ impl From<ParseError> for FetchError {
     }
 }
 
-fn fetch_html(url: &str) -> Result<Html, FetchError> {
-    let url = Url::parse(&url)?;
-
+fn fetch_html(url: Url) -> Result<Html, FetchError> {
     let client = Client::new();
     let mut res = client
         .get(url)
@@ -84,62 +84,27 @@ fn fetch_html(url: &str) -> Result<Html, FetchError> {
 
     let html = match res.text() {
         Ok(html) => html,
-        Err(_) => return Err(FetchError::ParseError),
+        Err(err) => return Err(FetchError::FetchHtmlError(err)),
     };
     let html = Html::parse_document(&html);
 
     Ok(html)
 }
 
-fn get_url(endpoint: &str) -> String {
-    format!("https://www.kwestiasmaku.com{}", endpoint)
+fn get_url(endpoint: &str) -> Result<Url, ParseError> {
+    let url = format!("https://www.kwestiasmaku.com{}", endpoint);
+    let url = Url::parse(&url)?;
+    Ok(url)
 }
 
-fn extract_hrefs(html: &Html) -> Vec<String> {
-    let selector = String::from(".row > .col> a[href^=\"/przepis\"]");
-    let selector = Selector::parse(&selector).unwrap();
-
-    html.select(&selector)
-        .filter_map(|el| el.value().attr("href"))
-        .map(|href| href.to_owned())
-        .collect()
-}
-
-fn extract_name(html: &Html) -> String {
-    let selector = String::from(".przepis.page-header");
-    let selector = Selector::parse(&selector).unwrap();
-
-    html.select(&selector)
-        .map(|el| el.text().collect::<String>())
-        .collect()
-}
-
-fn extract_ingredients(html: &Html) -> Vec<String> {
-    let selector = String::from(".field-name-field-skladniki li");
-    let selector = Selector::parse(&selector).unwrap();
-
-    html.select(&selector)
-        .map(|el| el.text().collect::<String>().trim().to_owned())
-        .collect()
-}
-
-fn extract_preparation(html: &Html) -> Vec<String> {
-    let selector = String::from(".field-name-field-przygotowanie li");
-    let selector = Selector::parse(&selector).unwrap();
-
-    html.select(&selector)
-        .map(|el| el.text().collect::<String>().trim().to_owned())
-        .collect()
-}
 
 fn extract_links() -> Result<Vec<String>, FetchError> {
     let mut rng = rand::thread_rng();
     let page = rng.gen_range(0, 4);
 
-    let url = &get_url("/przepisy/jednogarnkowe");
-    let url = format!("{}?page={}", url, page);
+    let url = get_url(&format!("/przepisy/jednogarnkowe?page={}", page))?;
 
-    let html = fetch_html(&url)?;
+    let html = fetch_html(url)?;
     let links = extract_hrefs(&html);
 
     Ok(links)
@@ -163,8 +128,8 @@ pub fn get_recipe(buffer: &mut Vec<u8>) -> () {
         }
     };
 
-    let link = get_url(&link);
-    let html = match fetch_html(&link) {
+    let url = get_url(&link).ok().unwrap();
+    let html = match fetch_html(url) {
         Ok(html) => html,
         Err(err) => {
             RecipeError::new(err).encode(buffer).unwrap();

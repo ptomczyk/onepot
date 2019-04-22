@@ -1,0 +1,65 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug unit tests in library 'recipes'",
+      "cargo": {
+        "args": ["test", "--no-run", "--lib", "--package=recipes"],
+        "filter": {
+          "name": "recipes",
+          "kind": "lib"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug executable 'main'",
+      "cargo": {
+        "args": ["build", "--bin=main", "--package=recipes"],
+        "filter": {
+          "name": "main",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug executable 'get_recipe'",
+      "cargo": {
+        "args": ["build", "--bin=get_recipe", "--package=recipes"],
+        "filter": {
+          "name": "get_recipe",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    ,
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug unit tests in executable 'get_recipe'",
+      "cargo": {
+        "args": ["test", "--no-run", "--bin=get_recipe", "--package=recipes"],
+        "filter": {
+          "name": "get_recipe",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
