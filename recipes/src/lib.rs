@@ -21,9 +21,9 @@ impl RecipeError {
         let mut err = Self::default();
 
         err.reason = match reason {
-            FetchError::UrlParsingError => String::from("URL parsing error"),
-            FetchError::FetchHtmlError(e) => String::from("Reqwest error"),
-            FetchError::UnknownError => String::from("Other error"),
+            FetchError::UrlParsingError(err) => String::from(format!("URL parsing error: {}", err)),
+            FetchError::FetchHtmlError(err) => String::from(format!("Reqwest error: {}", err)),
+            FetchError::UnknownError(err) => String::from(format!("Other error: {}", err)),
         };
 
         err
@@ -63,14 +63,14 @@ impl Recipe {
 }
 
 enum FetchError {
-    UrlParsingError,
+    UrlParsingError(ParseError),
     FetchHtmlError(reqwest::Error),
-    UnknownError,
+    UnknownError(String),
 }
 
 impl From<ParseError> for FetchError {
-    fn from(_: ParseError) -> Self {
-        FetchError::UrlParsingError
+    fn from(err: ParseError) -> Self {
+        FetchError::UrlParsingError(err)
     }
 }
 
@@ -115,7 +115,7 @@ fn get_random_link() -> Result<String, FetchError> {
     let link = links.choose(&mut rand::thread_rng());
     match link {
         Some(link) => Ok(link.to_owned()),
-        None => Err(FetchError::UnknownError),
+        None => Err(FetchError::UnknownError(String::from("No links found"))),
     }
 }
 

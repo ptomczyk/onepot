@@ -19,7 +19,7 @@ export async function fetchRecipe(): Promise<Recipe> {
     //   ingredients: [{ name: 'bigos' }, { name: 'kiełbasa' }],
     //   preparation: [{ description: 'zrób zakupy' }],
     // });
-    req.open('GET', 'https://recipes.ptm.now.sh/', true);
+    req.open('GET', 'https://recipes-git-master.ptm.now.sh', true);
     req.responseType = 'arraybuffer';
     req.onerror = reject;
     req.onload = () => {

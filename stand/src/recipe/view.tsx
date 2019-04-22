@@ -1,16 +1,18 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { Text, View, ScrollView, RefreshControl } from 'react-native';
 import styled from 'styled-components';
 
 import { Recipe } from './types';
 
 interface RecipeProps {
   recipe: Recipe;
+  refreshing: boolean;
+  refresh: () => void;
 }
 
-const RecipeView = ({ recipe }: RecipeProps) => {
+const RecipeView = ({ recipe, refresh, refreshing }: RecipeProps) => {
   return (
-    <RecipeContainer>
+    <RecipeContainer refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
       <RecipeName> {recipe.name} </RecipeName>
       {recipe.ingredients.map(({ name }, index) => (
         <Ingredient key={index}>{name}</Ingredient>
