@@ -4,17 +4,22 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "build": "pbf ../recipes/src/recipes.proto > src/recipe/_auto.js"
   },
   "dependencies": {
     "expo": "^32.0.0",
     "react": "16.5.0",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz"
+    "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
+    "styled-components": "^4.2.0"
   },
   "devDependencies": {
     "@types/expo": "^32.0.10",
+    "@types/pbf": "^3.0.1",
     "@types/react-native": "^0.57.43",
+    "@types/styled-components": "^4.1.14",
     "babel-preset-expo": "^5.0.0",
+    "pbf": "^3.2.0",
     "typescript": "^3.4.3"
   },
   "private": true
